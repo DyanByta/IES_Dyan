@@ -26,20 +26,18 @@ def file_range(vocab, vocab_add):
 # 向词表导入vocab的内容
 def dir_io():
     vocab = []
-    fi_1 = open(dir_path, 'r', encoding='UTF-8')
-    for fi_1_line in fi_1:
-        vocab.append(fi_1_line.strip())
-    fi_1.close()
+    with open(dir_path, 'r', encoding='UTF-8') as fi_1:
+        for fi_1_line in fi_1:
+            vocab.append(fi_1_line.strip())
     return vocab
 
 
 # 【字典初始化】向vocab写入数据
 def dir_write():
     vocab_0 = ['语义空间', '测试样例', '语义解析', '测试纹路', '测试文本', '复杂度', '测试', '测试文本数据集']
-    fw_1 = open(dir_path, 'w', encoding='UTF-8')
-    for vocab_0_line in vocab_0:
-        fw_1.write(vocab_0_line + "\n")
-    fw_1.close()
+    with open(dir_path, 'w', encoding='UTF-8') as fw_1:
+        for vocab_0_line in vocab_0:
+            fw_1.write(vocab_0_line + "\n")
 
 
 # 【测试初始化】生成测试文本文件

@@ -8,7 +8,7 @@ import file_processing as fp
 
 
 # 认知标记
-def func_1(input_data):
+def func_1(input_data, vocab_list):
     input_length = len(input_data)
     input_flag = input_length * [0]
     break_flag = 0
@@ -22,7 +22,7 @@ def func_1(input_data):
         vocab_tmp_max = 0
         # 获取同首词集合
         break_sig = 0
-        for item in vocab:
+        for item in vocab_list:
             if character == item[0]:
                 break_sig = len(item)
                 vocab_tmp.append(item)
@@ -50,31 +50,32 @@ def func_1(input_data):
 
 
 # 对输入文本打认知标记，以段落/行为单位
-def func_2(test_dir):
+def func_2(test_dir, vocab_list):
     txt_dir = "data/" + test_dir + ".txt"
     try:
         with open(txt_dir, "r", encoding="UTF-8") as fi:
-            print("。".join([func_1(input_segment) for input_segment in fi.readline().split("。")]))
+            print("。".join([func_1(input_segment, vocab_list) for input_segment in fi.readline().split("。")]))
     except IOError:
         print("文件无法读取！")
 
 
 # 处理新词输入
-def func_3(input_word):
+def func_3(input_word, vocab_list, vocab_new_list):
     if input_word == "help":
         print("返回操作：0\n删除操作：del 待删除词\n")
     elif input_word[:3] == "del":
-        if input_word[4:] in vocab:
-            vocab.remove(input_word[4:])
+        if input_word[4:] in vocab_list:
+            vocab_list.remove(input_word[4:])
             print("删除成功！")
         else:
             print("不存在！")
     else:
-        if input_word not in vocab:
-            vocab_new.append(input_word)
+        if input_word not in vocab_list:
+            vocab_new_list.append(input_word)
             print("添加成功！")
         else:
             print("已存在！")
+    return vocab_list, vocab_new_list
 
 
 # 结束标记
@@ -84,13 +85,15 @@ def func_0():
 
 # 主功能函数——标记
 def marker():
+    vocab = fp.dir_io()
+    vocab_new = []
     input_select = input("请选择：1.手打模式；2.文件模式；3.录入模式；0.结束\n")
     while input_select != 0:
         if input_select == "1":
             input_info = input("正在聆听（输入0返回上一层）：\n")
             while input_info != "0":
                 start = time.perf_counter()
-                print(func_1(input_info))
+                print(func_1(input_info, vocab))
                 end = time.perf_counter()
                 print("查找耗时：" + str("%.6f" % ((end - start) * 1000)) + "ms")
                 input_info = input("正在聆听（输入0返回上一层）：\n")
@@ -98,14 +101,14 @@ def marker():
             input_info = input("请输入文件名（输入0返回上一层）：\n")
             while input_info != "0":
                 start = time.perf_counter()
-                func_2(input_info)
+                func_2(input_info, vocab)
                 end = time.perf_counter()
                 print("查找耗时：" + str("%.6f" % ((end - start) * 1000)) + "ms")
                 input_info = input("请输入文件名（输入0返回上一层）：\n")
         elif input_select == "3":
             input_info = input("请输入单词（输入0返回上一层）：\n")
             while input_info != "0":
-                func_3(input_info)
+                vocab, vocab_new = func_3(input_info, vocab, vocab_new)
                 input_info = input("请输入单词（输入0返回上一层）：\n")
             fp.file_range(vocab, vocab_new)
         elif input_select == "0":
@@ -117,6 +120,4 @@ def marker():
 
 
 if __name__ == "__main__":
-    vocab = fp.dir_io()
-    vocab_new = []
     marker()
