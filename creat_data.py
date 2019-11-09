@@ -18,8 +18,9 @@ def calculate(input_data):
     # print("标准矩阵 =", t.standardization(score_list))
     test = np.random.rand(length, length + 1)
     print(test)
-    for row in range(test.shape[-1]):
-        print(test[:, row].reshape(test.shape[0], 1))
+    print(np.exp(score_list) / np.sum(np.exp(score_list)))
+    # for row in range(test.shape[-1]):
+    #     print(test[:, row].reshape(test.shape[0], 1))
     # print(test[:, 1].reshape(length, 1))
     # score = np.dot(test, t.standardization(score_list))
     # print(score)
