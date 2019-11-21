@@ -19,6 +19,8 @@ def calculate(input_data):
     test = np.random.rand(length, length + 1)
     print(test)
     print(np.exp(score_list) / np.sum(np.exp(score_list)))
+    test_num = np.random.normal(loc=0, scale=1)
+    print(test_num)
     # for row in range(test.shape[-1]):
     #     print(test[:, row].reshape(test.shape[0], 1))
     # print(test[:, 1].reshape(length, 1))
