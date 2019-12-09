@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
+# 嵌入表示为行向量
+
 
 import math
-import json
 import time
-import re
 from tqdm import tqdm
 import random
 import numpy as np
@@ -11,7 +11,7 @@ import numpy as np
 dir_path = "data/测试.txt"
 outer_path = "data/结果.txt"
 flag_sentence = "En Taro Zeratul!"
-feature_size = 42
+feature_size = 4
 max_step = 50
 
 
@@ -34,46 +34,43 @@ def softmax(input_data):
     return data_exp / np.sum(data_exp)
 
 
-# 计算相似性 - dot模式
+# 计算相似性 - 向量dot模式
 def get_similarity_dot(vector_1, vector_2):
-    similarity = np.dot(vector_1.T, vector_2) / np.sqrt(vector_1.shape[0])
+    similarity = np.dot(vector_1, vector_2) / np.sqrt(vector_1.size)
     return similarity
 
 
-# 获取value向量
+# 生成value
 def get_value(word):
-    # value = np.array([(math.pow(random.random() - 0.5, 3) * 2) * (ord(word) - 19967) for i in range(feature_size)])
     value = np.array([np.random.normal(loc=0, scale=1) for i in range(feature_size)])
-    value = value.reshape(feature_size, 1)
     return value
 
 
 # 注意力
 def attention(query, value_list):
-    list_length = value_list.shape[-1]
-    similarities = np.zeros(shape=(list_length, 1))
+    list_length = value_list.shape[0]
+    similarities = np.zeros(shape=(1, list_length))
     for key_index in range(list_length):
-        similarities[key_index] = get_similarity_dot(value_list[:, key_index].reshape(value_list.shape[0], 1), query)
+        similarities[0, key_index] = get_similarity_dot(query, value_list[key_index])
     similarities = softmax(similarities)
     # 求加权和
-    return np.dot(value_list, similarities)
+    return np.dot(similarities, value_list)
 
 
 # 自注意力
 def self_attention(input_data):
-    data_length = input_data.shape[-1]
-    feature_list = np.zeros(shape=(input_data.shape[0], data_length))
+    data_length = input_data.shape[0]
+    feature_list = np.zeros(shape=(data_length, input_data.shape[-1]))
     for query_index in range(data_length):
-        feature_list[:, query_index] = attention(input_data[:, query_index], input_data)[:, 0]
+        feature_list[query_index] = attention(input_data[query_index], input_data)
     return feature_list
 
 
 # value初始化
 def get_text_value(input_text):
-    text_length = len(input_text)
-    value_list = np.zeros(shape=(feature_size, text_length))
+    value_list = np.zeros(shape=(len(input_text), feature_size))
     for word_index, word in enumerate(input_text):
-        value_list[:, word_index] = get_value(word)[:, 0]
+        value_list[word_index] = get_value(word)
     return value_list
 
 
@@ -88,7 +85,6 @@ def get_attention(text_input):
         text_loop = self_attention(text_loop)
         step_count.set_description("计算进度")
         step_count.set_postfix(loss=random.random())
-        time.sleep(0.001)
 
     print("【文本内容】\n", text_input)
     print("【初始参数】\n", corpus_value)
