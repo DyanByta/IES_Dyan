@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
+# 文档处理
 
 import time
+
 
 dir_path = "data/vocab.txt"
 

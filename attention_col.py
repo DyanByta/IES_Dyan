@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
 # 嵌入表示为列向量
 
-
 import math
 import time
 from tqdm import tqdm
 import random
 import numpy as np
+
 
 dir_path = "data/测试.txt"
 outer_path = "data/结果.txt"
